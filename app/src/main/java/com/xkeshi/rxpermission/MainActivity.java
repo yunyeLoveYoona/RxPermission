@@ -20,29 +20,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.getSdPermission).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CALL_PHONE},
-                        15);
-//                RxPermission.requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, MainActivity.this).subscribeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<String>() {
-//                    @Override
-//                    public void onCompleted() {
-//                        Toast.makeText(MainActivity.this, "获取权限成功", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        Toast.makeText(MainActivity.this, "获取权限失败", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onNext(String result) {
-//
-//                    }
-//                });
-            }
-        });
-        findViewById(R.id.getInternetPermission).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
                 RxPermission.requestPermission(Manifest.permission.CALL_PHONE, MainActivity.this).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<String>() {
                     @Override
                     public void onCompleted() {
@@ -61,5 +39,34 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+        findViewById(R.id.getInternetPermission).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            RxPermission.requestPermission(Manifest.permission.READ_PHONE_STATE, MainActivity.this).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<String>() {
+                @Override
+                public void onCompleted() {
+                    Toast.makeText(MainActivity.this, "获取权限成功", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Toast.makeText(MainActivity.this, "获取权限失败", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onNext(String result) {
+
+                }
+            });
+        }
     }
 }

@@ -15,32 +15,37 @@ import rx.schedulers.Schedulers;
  */
 public class RxPermission {
 
-    public static Observable<String> requestPermission(final String permission, final Activity activity) {
+    public static Observable<String> requestPermission(final String[] permissions, final Activity activity) {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                if (ContextCompat.checkSelfPermission(activity, permission)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    //申请WRITE_EXTERNAL_STORAGE权限
-                    ActivityCompat.requestPermissions(activity, new String[]{permission},
-                            1111);
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    while (!activity.hasWindowFocus()) {
-
-                    }
-                    if (ContextCompat.checkSelfPermission(activity, permission)
+                int i = 0;
+                while (i < permissions.length) {
+                    if (ContextCompat.checkSelfPermission(activity, permissions[i])
                             != PackageManager.PERMISSION_GRANTED) {
-                        subscriber.onError(new Throwable("requestPermission fail"));
+                        i = permissions.length;
+                        ActivityCompat.requestPermissions(activity, permissions,
+                                1111);
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        while (!activity.hasWindowFocus()) {
+
+                        }
+                        if (ContextCompat.checkSelfPermission(activity, permissions[i])
+                                != PackageManager.PERMISSION_GRANTED) {
+                            subscriber.onError(new Throwable("requestPermission fail"));
+                        } else {
+                            subscriber.onCompleted();
+                        }
                     } else {
                         subscriber.onCompleted();
                     }
-                } else {
-                    subscriber.onCompleted();
+                    i++;
                 }
+
             }
         }).subscribeOn(Schedulers.io());
     }
